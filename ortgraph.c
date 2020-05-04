@@ -1,7 +1,7 @@
 /*
  * @Author: verandert
  * @Date: 2020-04-30 22:56:41
- * @LastEditTime: 2020-05-03 15:57:04
+ * @LastEditTime: 2020-05-04 11:38:37
  * @Description: create orthongonal list and define some functions about it
  */
 #include "./include/graph.h"
@@ -49,8 +49,7 @@ int locate(OrtGraph *G, VerType data){
  * @Description: depth_first search
  */
 void DFSTraverse(OrtGraph *G, enum bool visited[]){
-    for (int i = 0; i < G->vernum; i++) DFS(G, i, visited);
-    printf("\n");
+    for (int i = 0; i < G->vernum; i++) if(!visited[i]) DFS(G, i, visited);
 }
 
 void DFS(OrtGraph *G, int v, enum bool visited[]){
@@ -89,4 +88,64 @@ void BFSTraverse(OrtGraph *G, enum bool visited[]){
         }
         
     }
+}
+/**
+ * @Description:translate graph to child-brother trees.
+ */
+void DFSForest(OrtGraph *G, enum bool visited[], CBTree *T){
+    CBTree p, q;
+    for (int i = 0; i < G->vernum; i++)
+    {
+        if(visited[i] == false){
+            printf("%.2f\n", G->xlist[i].data);
+            visited[i] = true;
+            if(i>0) {
+                if((p = (CBNode*)malloc(sizeof(CBNode)))){
+                    p->data = G->xlist[i].data;
+                    p->firstchild = NULL;
+                    p->nextbrother = NULL;
+                    q = *T;
+                    while (q->nextbrother) q = q->nextbrother;
+                    q->nextbrother = p;
+                    DFSTree(G, i, visited, p);
+                }
+            } else
+            {
+                if(!(*T)) *T = (CBNode*)malloc(sizeof(CBNode));
+                if(!(*T)) exit(0);
+                (*T)->data = G->xlist[0].data;
+                (*T)->firstchild = NULL;
+                (*T)->nextbrother = NULL;
+                DFSTree(G, i, visited, *T);
+            }
+            
+        }
+    }
+    
+}
+void DFSTree(OrtGraph *G, int v, enum bool visited[], CBTree T){
+    ArcNode *p;
+    CBNode *t, *q;
+    p = G->xlist[v].outarc;
+    while (p)
+    {
+        if(visited[p->headver]==false){
+            if((t = (CBNode*)malloc(sizeof(CBNode)))){
+                visited[p->headver] = true;
+                printf("%.2f\n", G->xlist[p->headver].data);
+                t->data = G->xlist[p->headver].data;
+                t->firstchild = NULL;
+                t->nextbrother = NULL;
+                if(!T->firstchild) T->firstchild = t;
+                else
+                {
+                    q = T->firstchild;
+                    while (q->nextbrother) q = q->nextbrother;
+                    q->nextbrother = t;
+                }
+            }
+            DFSTree(G, p->headver, visited, t);
+        }
+        p = p->tlink;
+    }   
 }
