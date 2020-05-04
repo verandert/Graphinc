@@ -1,7 +1,7 @@
 /*
  * @Author: verandert
  * @Date: 2020-05-03 13:39:42
- * @LastEditTime: 2020-05-03 14:05:36
+ * @LastEditTime: 2020-05-03 17:15:46
  * @Description: 
  */
 
@@ -53,4 +53,8 @@ SqElemtype GetQueueHead(SqQueue *Q)
 {
     if(IsQueueEmpty(Q)) {printf("取空队列头节点"); exit(-1);}
     return Q->base[Q->front];
+}
+
+void DestroyQueue(SqQueue *Q){
+    
 }
