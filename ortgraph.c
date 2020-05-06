@@ -1,7 +1,7 @@
 /*
  * @Author: verandert
  * @Date: 2020-04-30 22:56:41
- * @LastEditTime: 2020-05-04 11:38:37
+ * @LastEditTime: 2020-05-06 13:53:26
  * @Description: create orthongonal list and define some functions about it
  */
 #include "./include/graph.h"
@@ -34,7 +34,35 @@ void CreateOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]){
         G->xlist[k].inarc = G->xlist[j].outarc = p;
     }   
 }
-
+/**
+ * @Description: creatre reverse graph
+ */
+void CreateReverseOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]){
+    ArcNode *p;
+    int k, j;
+    for (int i = 0; i < G->vernum; i++)
+    {
+        G->xlist[i].data = ver[i];
+        G->xlist[i].inarc = NULL;
+        G->xlist[i].outarc = NULL;
+    }
+    for (int i = 0; i < G->arcnum; i++)
+    {
+        j = locate(G, *(*(arc+i)+0));
+        k = locate(G, *(*(arc+i)+1));
+        if(j != -1 && k != -1){
+            if((p = (ArcNode*)malloc(sizeof(ArcNode)))){
+                p->tailver = k;
+                p->headver = j;
+                p->hlink = G->xlist[j].inarc;
+                p->tlink = G->xlist[k].outarc;
+                p->info = "this is a arc";
+                G->xlist[j].inarc = G->xlist[k].outarc = p;
+            }
+        }
+       
+    }
+}
 /**
  * @Description: if data was found in G, return index of data, else return -1;
  */
@@ -56,7 +84,7 @@ void DFS(OrtGraph *G, int v, enum bool visited[]){
     ArcNode *p;
     if(visited[v]==false){
         visited[v] = true;
-        printf("%.2f\n", G->xlist[v].data);
+        printf("%.2f ", G->xlist[v].data);
         p = G->xlist[v].outarc;
         while (p)
         {
@@ -90,7 +118,7 @@ void BFSTraverse(OrtGraph *G, enum bool visited[]){
     }
 }
 /**
- * @Description:translate graph to child-brother trees.
+ * @Description:convert graph to child-brother trees.
  */
 void DFSForest(OrtGraph *G, enum bool visited[], CBTree *T){
     CBTree p, q;
@@ -148,4 +176,53 @@ void DFSTree(OrtGraph *G, int v, enum bool visited[], CBTree T){
         }
         p = p->tlink;
     }   
+}
+
+/**
+ * @Description:find strongly connected components by kosaraju in graph which was implemented by orthongonal list
+ */
+void FSCCbyKosaraju(OrtGraph *G, OrtGraph *Gr, enum bool visited[]){
+    int count, finished[G->vernum];
+    enum bool reversevisited[G->vernum];
+    for (int i = 0; i < G->vernum; i++)
+    {
+        if(reversevisited[i]!=false) reversevisited[i] = false;
+    }
+    for (int i = 0; i < G->vernum; i++)
+    {
+        if(visited[i] == false) {
+            count = 0;
+            DFSFSCC(G, i, visited, &count, finished);
+            // printf("count: %d ", count);
+            // for (int i = 0; i < count; i++)
+            // {
+            //     printf("%.2f ", G->xlist[finished[i]].data);
+            // }
+            //printf("\n");
+            for (int i = count-1; i >= 0; i--)
+            {
+                if(!reversevisited[finished[i]]){
+                    printf("强连通分量为:");
+                    DFS(Gr, finished[i], reversevisited);
+                    printf("\n");
+                }
+            }
+        }
+    }
+}
+
+void FSCCDFS(OrtGraph *G, int v, enum bool visited[], int *count, int finished[]){
+    ArcNode *p;
+    if(visited[v]==false){
+        visited[v] = true;
+        //printf("%.2f\n", G->xlist[v].data);
+        p = G->xlist[v].outarc;
+        while (p)
+        {
+            DFSFSCC(G, p->headver, visited, count, finished);
+            p = p->tlink;
+        }
+        finished[(*count)++] = v;
+    }
+    
 }
