@@ -1,7 +1,7 @@
 /*
  * @Author: verandert
  * @Date: 2020-05-03 13:41:47
- * @LastEditTime: 2020-05-06 13:49:09
+ * @LastEditTime: 2020-05-06 23:35:18
  * @Description: headfile for ortgraph
  */
 #ifndef _GRAPH_H
@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
+#define Int_Max 2147483647
 #define MaxNum 20//max numbers of vertex
 #define MAXSIZE 250//max numbers of squeue
 
@@ -17,7 +17,7 @@
 enum bool{false, true};
 typedef float VerType;//type of vertex
 
-typedef char* InfoType;
+typedef int InfoType;
 typedef struct ArcNode
 {
     int tailver, headver;
@@ -62,8 +62,16 @@ typedef struct CBNode
     struct CBNode *firstchild, *nextbrother;
 }CBNode, *CBTree;
 
-void CreateOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]);
-void CreateReverseOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]);
+typedef int VrtType;
+typedef struct
+{
+    int adjvex;
+    VrtType lowcost;
+}Closedge;
+
+
+void CreateOG(OrtGraph *G, VerType ver[], VerType (*arc)[3]);
+void CreateReverseOG(OrtGraph *G, VerType ver[], VerType (*arc)[3]);
 int locate(OrtGraph *G, VerType data);
 void DFS(OrtGraph *G, int v, enum bool visited[]);
 void DFSTraverse(OrtGraph *G, enum bool visited[]);
@@ -72,6 +80,7 @@ void DFSForest(OrtGraph *G, enum bool visited[], CBTree *T);
 void DFSTree(OrtGraph *G, int v, enum bool visited[], CBTree T);
 void FSCCDFS(OrtGraph *G, int v, enum bool visited[], int *count, int finished[]);
 void FSCCbyKosaraju(OrtGraph *G, OrtGraph *Gr, enum bool visited[]);
+void MSTByPrim(OrtGraph *G);
 
 void InitQueue(SqQueue *Q);
 int QueueLength(SqQueue *Q);
