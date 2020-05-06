@@ -1,7 +1,7 @@
 /*
  * @Author: verandert
  * @Date: 2020-04-30 22:56:41
- * @LastEditTime: 2020-05-06 14:04:06
+ * @LastEditTime: 2020-05-07 01:20:15
  * @Description: create orthogonal list and define some functions about it
  */
 #include "./include/graph.h"
@@ -9,7 +9,7 @@
 /**
  * @description: create orthogonal list by @ver which includes all vertexs and @arc which includes all arcs of vertexs
  */
-void CreateOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]){
+void CreateOG(OrtGraph *G, VerType ver[], VerType (*arc)[3]){
     ArcNode *p;
     int k, j;
     for (int i = 0; i < G->vernum; i++)
@@ -28,7 +28,7 @@ void CreateOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]){
                 p->headver = k;
                 p->hlink = G->xlist[k].inarc;
                 p->tlink = G->xlist[j].outarc;
-                p->info = "this is a arc";
+                p->info = *(*(arc+i)+2);
             }
         }
         G->xlist[k].inarc = G->xlist[j].outarc = p;
@@ -37,7 +37,7 @@ void CreateOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]){
 /**
  * @Description: creatre reverse graph
  */
-void CreateReverseOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]){
+void CreateReverseOG(OrtGraph *G, VerType ver[], VerType (*arc)[3]){
     ArcNode *p;
     int k, j;
     for (int i = 0; i < G->vernum; i++)
@@ -56,7 +56,7 @@ void CreateReverseOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]){
                 p->headver = j;
                 p->hlink = G->xlist[j].inarc;
                 p->tlink = G->xlist[k].outarc;
-                p->info = "this is a arc";
+                p->info = 0;
                 G->xlist[j].inarc = G->xlist[k].outarc = p;
             }
         }
@@ -195,7 +195,7 @@ void FSCCbyKosaraju(OrtGraph *G, OrtGraph *Gr, enum bool visited[]){
     {
         if(visited[i] == false) {
             count = 0;
-            DFSFSCC(G, i, visited, &count, finished);
+            FSCCDFS(G, i, visited, &count, finished);
             // printf("count: %d ", count);
             // for (int i = 0; i < count; i++)
             // {
@@ -224,10 +224,51 @@ void FSCCDFS(OrtGraph *G, int v, enum bool visited[], int *count, int finished[]
         p = G->xlist[v].outarc;
         while (p)
         {
-            DFSFSCC(G, p->headver, visited, count, finished);
+            FSCCDFS(G, p->headver, visited, count, finished);
             p = p->tlink;
         }
         finished[(*count)++] = v;
     }
     
+}
+
+/**
+ * @Description: Minimum Cost Spanning Tree
+ */
+void MSTByPrim(OrtGraph *G){
+    ArcNode *p;
+    Closedge closedge[G->vernum+1];
+    int start = 0, j;
+    for (int i = 0; i <= G->vernum; i++)
+    {
+        closedge[i].adjvex = start;
+        closedge[i].lowcost = Int_Max;
+    }
+    closedge[start].lowcost = 0;
+    p = G->xlist[start].outarc;
+    while (p)
+    {
+        closedge[p->headver].lowcost = p->info;
+        p = p->tlink;
+    }
+    for (int i = 0; i < G->vernum - 1; i++)
+    {
+        start = G->vernum;
+        for (j = 0; j < G->vernum; j++)
+        {
+            if(closedge[j].lowcost < closedge[start].lowcost && closedge[j].lowcost != 0) start = j;
+        }
+        printf("<%d, %d> ", closedge[start].adjvex, start);
+        closedge[start].lowcost = 0;
+        p = G->xlist[start].outarc;
+        while (p)
+        {
+            if(p->info < closedge[p->headver].lowcost) {
+                closedge[p->headver].lowcost = p->info;
+                closedge[p->headver].adjvex = p->tailver;
+            }
+            p = p->tlink;
+        }
+    }
+    printf("\n");
 }
