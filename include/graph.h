@@ -1,7 +1,7 @@
 /*
  * @Author: verandert
  * @Date: 2020-05-03 13:41:47
- * @LastEditTime: 2020-05-04 11:38:19
+ * @LastEditTime: 2020-05-06 13:49:09
  * @Description: headfile for ortgraph
  */
 #ifndef _GRAPH_H
@@ -63,12 +63,15 @@ typedef struct CBNode
 }CBNode, *CBTree;
 
 void CreateOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]);
+void CreateReverseOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]);
 int locate(OrtGraph *G, VerType data);
 void DFS(OrtGraph *G, int v, enum bool visited[]);
 void DFSTraverse(OrtGraph *G, enum bool visited[]);
 void BFSTraverse(OrtGraph *G, enum bool visited[]);
 void DFSForest(OrtGraph *G, enum bool visited[], CBTree *T);
 void DFSTree(OrtGraph *G, int v, enum bool visited[], CBTree T);
+void FSCCDFS(OrtGraph *G, int v, enum bool visited[], int *count, int finished[]);
+void FSCCbyKosaraju(OrtGraph *G, OrtGraph *Gr, enum bool visited[]);
 
 void InitQueue(SqQueue *Q);
 int QueueLength(SqQueue *Q);
