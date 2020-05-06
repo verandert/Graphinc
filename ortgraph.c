@@ -1,13 +1,13 @@
 /*
  * @Author: verandert
  * @Date: 2020-04-30 22:56:41
- * @LastEditTime: 2020-05-06 13:53:26
- * @Description: create orthongonal list and define some functions about it
+ * @LastEditTime: 2020-05-06 14:04:06
+ * @Description: create orthogonal list and define some functions about it
  */
 #include "./include/graph.h"
 
 /**
- * @description: create orthongonal list by @ver which includes all vertexs and @arc which includes all arcs of vertexs
+ * @description: create orthogonal list by @ver which includes all vertexs and @arc which includes all arcs of vertexs
  */
 void CreateOG(OrtGraph *G, VerType ver[], VerType (*arc)[2]){
     ArcNode *p;
@@ -151,6 +151,9 @@ void DFSForest(OrtGraph *G, enum bool visited[], CBTree *T){
     }
     
 }
+/**
+ * @Description: fucntion for DFSforest
+ */
 void DFSTree(OrtGraph *G, int v, enum bool visited[], CBTree T){
     ArcNode *p;
     CBNode *t, *q;
@@ -179,7 +182,7 @@ void DFSTree(OrtGraph *G, int v, enum bool visited[], CBTree T){
 }
 
 /**
- * @Description:find strongly connected components by kosaraju in graph which was implemented by orthongonal list
+ * @Description:find strongly connected components by kosaraju in graph which was implemented by orthogonal list
  */
 void FSCCbyKosaraju(OrtGraph *G, OrtGraph *Gr, enum bool visited[]){
     int count, finished[G->vernum];
@@ -210,7 +213,9 @@ void FSCCbyKosaraju(OrtGraph *G, OrtGraph *Gr, enum bool visited[]){
         }
     }
 }
-
+/**
+ * @Description: function for FSCCbyKosaraju
+ */
 void FSCCDFS(OrtGraph *G, int v, enum bool visited[], int *count, int finished[]){
     ArcNode *p;
     if(visited[v]==false){
