@@ -1,7 +1,7 @@
 /*
  * @Author: verandert
  * @Date: 2020-05-03 13:41:47
- * @LastEditTime: 2020-05-06 23:35:18
+ * @LastEditTime: 2020-05-07 21:11:30
  * @Description: headfile for ortgraph
  */
 #ifndef _GRAPH_H
@@ -60,14 +60,26 @@ typedef struct CBNode
 {
     TreeElem data;
     struct CBNode *firstchild, *nextbrother;
-}CBNode, *CBTree;
+}CBNode, *CBTree;//child-brother trees
 
 typedef int VrtType;
 typedef struct
 {
     int adjvex;
     VrtType lowcost;
-}Closedge;
+}Closedge;//struct for PRIM
+
+typedef struct TNode
+{
+    TreeElem data;
+    int parent;
+}TNode;//struct for kruskal
+
+typedef struct
+{
+    InfoType data;
+    int ver1, ver2;
+}Heap[MAXSIZE], HEAP;
 
 
 void CreateOG(OrtGraph *G, VerType ver[], VerType (*arc)[3]);
@@ -81,6 +93,9 @@ void DFSTree(OrtGraph *G, int v, enum bool visited[], CBTree T);
 void FSCCDFS(OrtGraph *G, int v, enum bool visited[], int *count, int finished[]);
 void FSCCbyKosaraju(OrtGraph *G, OrtGraph *Gr, enum bool visited[]);
 void MSTByPrim(OrtGraph *G);
+void swap(Heap heap, int index1, int index2);
+void InitHeap(Heap heap, int (*udarc)[3], int len);
+void MSTbyKruskal(VerType ver[], Heap heap, int num, int len, enum bool visited[], TNode tn[]);
 
 void InitQueue(SqQueue *Q);
 int QueueLength(SqQueue *Q);
