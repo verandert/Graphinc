@@ -1,7 +1,7 @@
 /*
  * @Author: verandert
  * @Date: 2020-04-30 22:56:41
- * @LastEditTime: 2020-05-07 01:20:15
+ * @LastEditTime: 2020-05-08 01:10:14
  * @Description: create orthogonal list and define some functions about it
  */
 #include "./include/graph.h"
@@ -233,7 +233,7 @@ void FSCCDFS(OrtGraph *G, int v, enum bool visited[], int *count, int finished[]
 }
 
 /**
- * @Description: Minimum Cost Spanning Tree
+ * @Description: Minimum Cost Spanning Tree by PRIM
  */
 void MSTByPrim(OrtGraph *G){
     ArcNode *p;
@@ -271,4 +271,83 @@ void MSTByPrim(OrtGraph *G){
         }
     }
     printf("\n");
+}
+/**
+ * @Description: heap for kruskal
+ */
+void InitHeap(Heap heap, int (*udarc)[3], int len){
+    int index = 1, temp, parent;
+    for (int i = 0; i < len; i++)
+    {
+        heap[index].data = *(*(udarc+i)+2);
+        heap[index].ver1 = *(*(udarc+i)+0);
+        heap[index].ver2 = *(*(udarc+i)+1);
+        temp = index;
+        while (temp > 1)
+        {
+            parent = temp / 2;
+            if(heap[parent].data > heap[temp].data){
+                swap(heap, temp, parent);
+            }
+            temp = parent;
+        }
+         index++;
+    }
+    
+}
+
+void swap(Heap heap, int index1, int index2){
+    HEAP temp;
+    temp = heap[index1];
+    heap[index1] = heap[index2];
+    heap[index2] = temp;
+}
+/**
+ * @Description: Minimum Cost Spanning Tree by Kruskal
+ */
+void MSTbyKruskal(VerType ver[], Heap heap, int num, int len, enum bool visited[], TNode tn[]){
+    int k, s, start, min;
+    for (int i = 0; i < num; i++)
+    {
+        tn[i].data = ver[i];
+        tn[i].parent = i;
+    }
+    for (int i = len; i >= 1; i--)
+    {
+        start = 1;
+        k = heap[1].ver1; s = heap[1].ver2;
+        //printf("(%d %d)", k, s);
+        while (tn[k].parent != k)
+        {
+            k = tn[k].parent;
+        }
+        while (tn[s].parent != s)
+        {
+            s = tn[s].parent;
+        }
+        if(k != s){
+            tn[k].parent = heap[1].ver1;
+            tn[s].parent = heap[1].ver2;
+            tn[heap[1].ver1].parent = heap[1].ver2;
+            tn[heap[1].ver2].parent = heap[1].ver2;
+        }
+        heap[1] = heap[i];
+        while (start < i)
+        {
+            if(2*start >= i) start = 2*start;
+            else if(2*start + 1 >= i) {
+                if(heap[start].data > heap[2*start].data) {
+                    swap(heap, start, 2*start);
+                }
+                start = 2*start;
+            }
+            else
+            {
+                if(heap[2*start].data <= heap[2*start + 1].data) min = 2*start;
+                else {min = 2*start + 1;}
+                if(heap[start].data > heap[min].data) {swap(heap, start, min); start = min;}
+                else break;
+            }
+        }
+    }
 }
